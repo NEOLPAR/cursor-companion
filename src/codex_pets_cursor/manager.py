@@ -129,11 +129,29 @@ class ManagerWindow(QWidget):
         self.keep_open_in_tray.setChecked(cfg.keep_open_in_tray)
         self.keep_open_in_tray.toggled.connect(self._save_settings)
 
+        self.wander_when_idle = QCheckBox()
+        self.wander_when_idle.setChecked(cfg.wander_when_idle)
+        self.wander_when_idle.toggled.connect(self._save_settings)
+
+        self.wander_delay = QSlider(Qt.Orientation.Horizontal)
+        self.wander_delay.setRange(3, 30)
+        self.wander_delay.setValue(max(3, min(30, cfg.wander_idle_delay_ms // 1000)))
+        self.wander_delay.valueChanged.connect(self._save_settings)
+        self.wander_delay_label = QLabel(f"{self.wander_delay.value()} s")
+        self.wander_delay.valueChanged.connect(lambda value: self.wander_delay_label.setText(f"{value} s"))
+        wander_delay_row = QWidget()
+        wander_delay_layout = QHBoxLayout(wander_delay_row)
+        wander_delay_layout.setContentsMargins(0, 0, 0, 0)
+        wander_delay_layout.addWidget(self.wander_delay)
+        wander_delay_layout.addWidget(self.wander_delay_label)
+
         form.addRow("Scale", self.scale_slider)
         form.addRow("X offset", self.offset_x)
         form.addRow("Y offset", self.offset_y)
         form.addRow("Start in tray at login", self.autostart)
         form.addRow("Keep open in tray", self.keep_open_in_tray)
+        form.addRow("Wander when idle", self.wander_when_idle)
+        form.addRow("Wander delay", wander_delay_row)
         close_app = QPushButton("Close App")
         close_app.clicked.connect(self.close_requested.emit)
         form.addRow(close_app)
@@ -152,6 +170,8 @@ class ManagerWindow(QWidget):
             self.keep_open_in_tray.setChecked(True)
             self.keep_open_in_tray.blockSignals(False)
         set_autostart(cfg.autostart, background=True)
+        cfg.wander_when_idle = self.wander_when_idle.isChecked()
+        cfg.wander_idle_delay_ms = self.wander_delay.value() * 1000
         self.config_store.save()
         self.settings_changed.emit()
 

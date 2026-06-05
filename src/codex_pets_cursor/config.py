@@ -15,6 +15,8 @@ class AppConfig:
     autostart: bool = False
     keep_open_in_tray: bool = True
     visible: bool = True
+    wander_when_idle: bool = False
+    wander_idle_delay_ms: int = 5000
 
 
 class ConfigStore:
