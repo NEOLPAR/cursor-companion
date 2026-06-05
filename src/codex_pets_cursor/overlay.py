@@ -51,6 +51,7 @@ class PetOverlay(QWidget):
         self.wander_action_started = 0.0
         self.wander_action_duration = 0.0
         self.last_wander_row: int | None = None
+        self.pending_wander_pause = False
         self.cell_width = 192
         self.cell_height = 208
         self.frame_counts: dict[Motion, int] = {motion: 1 for motion in Motion}
@@ -107,6 +108,7 @@ class PetOverlay(QWidget):
             if self.wandering:
                 self.wandering = False
                 self.returning_to_cursor = True
+                self.pending_wander_pause = False
             elif not self.returning_to_cursor:
                 self.companion_pos = QPointF(self.cursor_target_pos)
                 self.target_pos = QPoint(self.cursor_target_pos)
@@ -201,11 +203,19 @@ class PetOverlay(QWidget):
         self._set_row(self.wander_action.row)
 
     def _start_wander_action(self, now: float) -> None:
+        if not self.pending_wander_pause and self.wander_action is not None:
+            self.pending_wander_pause = True
+            self.wander_action = WanderSpec(0, 2, 2, 0, 0)
+            self.wander_action_started = now
+            self.wander_action_duration = 2.0
+            self._set_motion(Motion.IDLE)
+            return
+        self.pending_wander_pause = False
         specs = [
-            WanderSpec(1, 3, 15, 1.6, 0),
-            WanderSpec(2, 3, 15, -1.6, 0),
+            WanderSpec(1, 3, 15, 4.0, 0),
+            WanderSpec(2, 3, 15, -4.0, 0),
             WanderSpec(3, 2, 5, 0, 0),
-            WanderSpec(4, 2, 5, 0, random.choice([-1.4, 1.4])),
+            WanderSpec(4, 2, 5, 0, random.choice([-3.4, 3.4])),
             WanderSpec(5, 3, 8, 0, 0),
             WanderSpec(6, 3, 5, 0, 0),
             WanderSpec(7, 3, 5, 0, 0),
@@ -233,7 +243,7 @@ class PetOverlay(QWidget):
             self.target_pos = QPoint(round(target.x()), round(target.y()))
             self._set_motion(Motion.IDLE)
             return
-        step = min(18.0, distance)
+        step = min(4.0, distance)
         nx = current.x() + dx / distance * step
         ny = current.y() + dy / distance * step
         self.companion_pos = QPointF(nx, ny)
