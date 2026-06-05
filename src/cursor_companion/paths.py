@@ -3,10 +3,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-APP_ID = "codex-pets-cursor"
-DBUS_SERVICE = "io.github.NEOLPAR.CodexPetsCursor"
-DBUS_PATH = "/io/github/NEOLPAR/CodexPetsCursor"
-DBUS_INTERFACE = "io.github.NEOLPAR.CodexPetsCursor"
+APP_ID = "cursor-companion"
+DBUS_SERVICE = "io.github.NEOLPAR.CursorCompanion"
+DBUS_PATH = "/io/github/NEOLPAR/CursorCompanion"
+DBUS_INTERFACE = "io.github.NEOLPAR.CursorCompanion"
 
 
 def xdg_config_home() -> Path:

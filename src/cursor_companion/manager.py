@@ -37,7 +37,7 @@ class ManagerWindow(QWidget):
         super().__init__()
         self.config_store = config_store
         self.pet_store = pet_store
-        self.setWindowTitle("Codex Pets Cursor")
+        self.setWindowTitle("Cursor Companion")
         self.resize(920, 680)
 
         tabs = QTabWidget()
@@ -92,7 +92,7 @@ class ManagerWindow(QWidget):
         open_folder = QPushButton("Open Folder")
         import_folder.clicked.connect(self._import_folder)
         import_zip.clicked.connect(self._import_zip)
-        import_codex.clicked.connect(self._import_codex_pets)
+        import_codex.clicked.connect(self._import_cursor_companion)
         activate.clicked.connect(self._activate_selected)
         remove.clicked.connect(self._remove_selected)
         open_folder.clicked.connect(self._open_selected_folder)
@@ -244,7 +244,7 @@ class ManagerWindow(QWidget):
         if filename:
             self.import_download(Path(filename))
 
-    def _import_codex_pets(self) -> None:
+    def _import_cursor_companion(self) -> None:
         codex_dir = Path.home() / ".codex" / "pets"
         if not codex_dir.exists():
             QMessageBox.information(self, "No Codex pets found", "No ~/.codex/pets folder was found.")

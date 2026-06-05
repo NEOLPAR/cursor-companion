@@ -8,14 +8,14 @@ from .paths import AUTOSTART_DIR, AUTOSTART_FILE
 def set_autostart(enabled: bool, background: bool = True) -> None:
     if enabled:
         AUTOSTART_DIR.mkdir(parents=True, exist_ok=True)
-        executable = shutil.which("codex-pets-cursor") or "codex-pets-cursor"
+        executable = shutil.which("cursor-companion") or "cursor-companion"
         args = " --background" if background else ""
         AUTOSTART_FILE.write_text(
             "\n".join(
                 [
                     "[Desktop Entry]",
                     "Type=Application",
-                    "Name=Codex Pets Cursor",
+                    "Name=Cursor Companion",
                     f"Exec={executable}{args}",
                     "X-KDE-autostart-after=panel",
                     "X-GNOME-Autostart-enabled=true",

@@ -21,7 +21,7 @@ from .pets import PetStore
 class CursorPetApp:
     def __init__(self, show_manager: bool = True) -> None:
         self.qt = QApplication(sys.argv)
-        self.qt.setApplicationName("Codex Pets Cursor")
+        self.qt.setApplicationName("Cursor Companion")
         self.qt.setQuitOnLastWindowClosed(False)
 
         self.config_store = ConfigStore()
@@ -37,7 +37,7 @@ class CursorPetApp:
         self.dbus_registered = self.bridge.register_dbus()
         self.bridge.install_kwin_script()
         print(
-            f"Codex Pets Cursor 0.1.0-dev: tray menu includes 'Quit'; "
+            f"Cursor Companion 0.1.0-dev: tray menu includes 'Quit'; "
             f"dbus_registered={self.dbus_registered}; qt_platform={os.environ.get('QT_QPA_PLATFORM', 'default')}",
             flush=True,
         )
@@ -48,14 +48,14 @@ class CursorPetApp:
         self.poll_timer.start()
 
         self.tray = QSystemTrayIcon(QIcon.fromTheme("input-mouse"), self.qt)
-        self.tray.setToolTip("Codex Pets Cursor")
+        self.tray.setToolTip("Cursor Companion")
         self.tray.setContextMenu(self._tray_menu())
         self.tray.activated.connect(self._tray_activated)
         self._apply_tray_config()
 
         first_launch = not self.config_store.config.active_pet_id and not self.pet_store.list_pets()
         if first_launch:
-            self._import_existing_codex_pets()
+            self._import_existing_cursor_companion()
         self.set_active_pet(self.config_store.config.active_pet_id or "")
         self._poll_cursor()
         if show_manager or first_launch:
@@ -129,7 +129,7 @@ class CursorPetApp:
         pos: QPoint = QCursor.pos()
         self.overlay.update_cursor(pos.x(), pos.y())
 
-    def _import_existing_codex_pets(self) -> None:
+    def _import_existing_cursor_companion(self) -> None:
         codex_dir = Path.home() / ".codex" / "pets"
         if not codex_dir.exists():
             return

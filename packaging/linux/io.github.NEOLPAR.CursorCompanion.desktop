@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Cursor Companion
+Comment=Animated pet companion for the KDE Plasma cursor
+Exec=cursor-companion
+Icon=input-mouse
+Terminal=false
+Categories=Utility;Qt;

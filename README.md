@@ -1,6 +1,6 @@
-# Codex Pets Cursor
+# Cursor Companion
 
-Animated Codex pet companion for KDE Plasma. It keeps your existing cursor theme and draws a small animated pet beside the pointer.
+Animated companion for KDE Plasma. It keeps your existing cursor theme and draws a small animated pet beside the pointer.
 
 ## Features
 
@@ -14,7 +14,7 @@ Animated Codex pet companion for KDE Plasma. It keeps your existing cursor theme
 ```bash
 python -m build
 pip install --user dist/*.whl
-codex-pets-cursor
+cursor-companion
 ```
 
 On Arch-based systems, install the runtime dependencies first:
@@ -25,7 +25,7 @@ sudo pacman -S python-pyqt6 python-pyqt6-webengine qt6-wayland qt6-imageformats 
 
 ## Local Data
 
-The app stores configuration in `~/.config/codex-pets-cursor/` and downloaded pets in `~/.local/share/codex-pets-cursor/`.
+The app stores configuration in `~/.config/cursor-companion/` and downloaded pets in `~/.local/share/cursor-companion/`.
 
 ## AUR Package
 

@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Codex Pets Cursor
-Comment=Animated Codex pet companion for the KDE Plasma cursor
-Exec=codex-pets-cursor
-Icon=input-mouse
-Terminal=false
-Categories=Utility;Qt;

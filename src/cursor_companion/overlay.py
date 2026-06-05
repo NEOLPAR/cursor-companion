@@ -57,7 +57,7 @@ class PetOverlay(QWidget):
         self.frame_counts: dict[Motion, int] = {motion: 1 for motion in Motion}
         self.row_frame_counts: dict[int, int] = {row: 1 for row in range(9)}
 
-        self.setWindowTitle("Codex Pets Cursor Overlay")
+        self.setWindowTitle("Cursor Companion Overlay")
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
             | Qt.WindowType.Tool
