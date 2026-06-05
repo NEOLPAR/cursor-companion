@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import sys
-import time
 from pathlib import Path
 
 if os.environ.get("XDG_SESSION_TYPE") == "wayland" and not os.environ.get("CODEX_PETS_CURSOR_NATIVE_WAYLAND"):
@@ -125,7 +124,7 @@ class CursorPetApp:
             self._show_manager()
 
     def _poll_cursor(self) -> None:
-        if self.bridge and time.monotonic() - self.bridge.last_update < 1.0:
+        if self.bridge and self.bridge.last_update > 0:
             return
         pos: QPoint = QCursor.pos()
         self.overlay.update_cursor(pos.x(), pos.y())
