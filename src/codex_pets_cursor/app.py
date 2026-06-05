@@ -58,6 +58,7 @@ class CursorPetApp:
         if first_launch:
             self._import_existing_codex_pets()
         self.set_active_pet(self.config_store.config.active_pet_id or "")
+        self._poll_cursor()
         if show_manager or first_launch:
             self._show_manager()
 

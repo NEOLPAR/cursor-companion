@@ -30,6 +30,7 @@ class PetOverlay(QWidget):
         self.last_frame_time = time.monotonic()
         self.last_cursor_time = 0.0
         self.target_pos = QPoint(0, 0)
+        self.has_cursor_position = False
         self.cell_width = 192
         self.cell_height = 208
         self.frame_counts: dict[Motion, int] = {motion: 1 for motion in Motion}
@@ -61,7 +62,7 @@ class PetOverlay(QWidget):
             self.frame_counts = self._detect_frame_counts()
             self.frame = 0
             self._resize_to_config()
-            if self.config.visible:
+            if self.config.visible and self.has_cursor_position:
                 self.show()
         else:
             self.hide()
@@ -71,13 +72,14 @@ class PetOverlay(QWidget):
         self._resize_to_config()
         if not self.config.visible:
             self.hide()
-        elif self.pet and not self.sheet.isNull():
+        elif self.pet and not self.sheet.isNull() and self.has_cursor_position:
             self.show()
 
     def update_cursor(self, x: int, y: int) -> QPoint:
         pos = QPoint(x, y)
         moved = self.last_pos is None or pos != self.last_pos
         self.target_pos = QPoint(x + self.config.offset_x, y + self.config.offset_y)
+        self.has_cursor_position = True
         if moved:
             self.last_cursor_time = time.monotonic()
             self._set_motion(self._motion_for(pos))
@@ -125,8 +127,12 @@ class PetOverlay(QWidget):
 
     def _set_motion(self, motion: Motion) -> None:
         if motion != self.motion:
+            was_idle = self.motion == Motion.IDLE
             self.motion = motion
-            self.frame = 0
+            if was_idle or motion == Motion.IDLE:
+                self.frame = 0
+            else:
+                self.frame %= self.frame_counts.get(motion, 1)
 
     def _resize_to_config(self) -> None:
         width = max(24, int(self.cell_width * self.config.scale))
