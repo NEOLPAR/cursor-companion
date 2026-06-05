@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import subprocess
 import time
-from pathlib import Path
 
 from PyQt6.QtCore import QObject, pyqtSlot
 from PyQt6.QtDBus import QDBusConnection
@@ -15,14 +14,21 @@ var service = "{DBUS_SERVICE}";
 var path = "{DBUS_PATH}";
 var iface = "local.CursorBridge";
 
+function valueOf(value) {{
+    return typeof value === "function" ? value() : value;
+}}
+
 function publishCursor() {{
     var p = workspace.cursorPos;
-    var x = typeof p.x === "function" ? p.x() : p.x;
-    var y = typeof p.y === "function" ? p.y() : p.y;
-    callDBus(service, path, iface, "UpdateCursor", Math.round(x), Math.round(y), Date.now() / 1000.0);
+    var x = Math.round(Number(valueOf(p.x)));
+    var y = Math.round(Number(valueOf(p.y)));
+    callDBus(service, path, iface, "UpdateCursor", x, y);
 }}
 
 workspace.cursorPosChanged.connect(publishCursor);
+if (typeof setInterval === "function") {{
+    setInterval(publishCursor, 50);
+}}
 publishCursor();
 """
 
@@ -34,10 +40,13 @@ class CursorBridge(QObject):
         self.script_id: int | None = None
         self.last_update = 0.0
 
+    @pyqtSlot(int, int)
+    @pyqtSlot(float, float)
     @pyqtSlot(int, int, float)
-    def UpdateCursor(self, x: int, y: int, timestamp: float) -> None:  # noqa: N802, ARG002
+    @pyqtSlot(float, float, float)
+    def UpdateCursor(self, x: float, y: float, timestamp: float = 0.0) -> None:  # noqa: N802, ARG002
         self.last_update = time.monotonic()
-        self.callback(x, y)
+        self.callback(round(x), round(y))
 
     def register_dbus(self) -> bool:
         bus = QDBusConnection.sessionBus()

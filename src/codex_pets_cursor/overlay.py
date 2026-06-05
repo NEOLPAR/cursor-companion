@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import time
 from enum import Enum
-from random import Random
 
-from PyQt6.QtCore import QPoint, QPointF, QRect, QSize, Qt, QTimer
+from PyQt6.QtCore import QPoint, QRect, QSize, Qt, QTimer
 from PyQt6.QtGui import QImage, QPainter, QPixmap
-from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtWidgets import QWidget
 
 from .config import AppConfig
 from .pets import Pet
@@ -31,9 +30,6 @@ class PetOverlay(QWidget):
         self.last_frame_time = time.monotonic()
         self.last_cursor_time = 0.0
         self.target_pos = QPoint(0, 0)
-        self.wander_pos = QPointF(0, 0)
-        self.wander_velocity = QPointF(1.4, 0.8)
-        self.random = Random()
         self.cell_width = 192
         self.cell_height = 208
         self.frame_counts: dict[Motion, int] = {motion: 1 for motion in Motion}
@@ -45,6 +41,7 @@ class PetOverlay(QWidget):
             | Qt.WindowType.WindowStaysOnTopHint
             | Qt.WindowType.WindowDoesNotAcceptFocus
             | Qt.WindowType.WindowTransparentForInput
+            | Qt.WindowType.X11BypassWindowManagerHint
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
@@ -80,13 +77,10 @@ class PetOverlay(QWidget):
     def update_cursor(self, x: int, y: int) -> QPoint:
         pos = QPoint(x, y)
         moved = self.last_pos is None or pos != self.last_pos
+        self.target_pos = QPoint(x + self.config.offset_x, y + self.config.offset_y)
         if moved:
             self.last_cursor_time = time.monotonic()
             self._set_motion(self._motion_for(pos))
-            self.target_pos = QPoint(x + self.config.offset_x, y + self.config.offset_y)
-            self.wander_pos = QPointF(self.target_pos)
-        elif not self.config.wander_when_idle:
-            self._set_motion(Motion.IDLE)
         self.last_pos = pos
         self._resize_to_config()
         self.move(self.target_pos)
@@ -112,7 +106,7 @@ class PetOverlay(QWidget):
         dy = pos.y() - self.last_pos.y()
         if dx == 0 and dy == 0:
             return Motion.IDLE
-        if dy < 0 and abs(dy) >= max(1, abs(dx) * 0.5):
+        if dy != 0 and abs(dy) >= max(1, abs(dx) * 0.5):
             return Motion.UP
         if dx < 0:
             return Motion.LEFT
@@ -124,10 +118,7 @@ class PetOverlay(QWidget):
         if self.sheet.isNull():
             return
         if self.last_cursor_time and time.monotonic() - self.last_cursor_time > 0.14:
-            if self.config.wander_when_idle:
-                self._wander()
-            else:
-                self._set_motion(Motion.IDLE)
+            self._set_motion(Motion.IDLE)
         self.frame = (self.frame + 1) % self.frame_counts.get(self.motion, 1)
         self.move(self.target_pos)
         self.update()
@@ -136,38 +127,6 @@ class PetOverlay(QWidget):
         if motion != self.motion:
             self.motion = motion
             self.frame = 0
-
-    def _wander(self) -> None:
-        screen = QApplication.primaryScreen()
-        geometry = screen.availableGeometry() if screen else QRect(0, 0, 1920, 1080)
-        next_pos = self.wander_pos + self.wander_velocity
-        min_x = geometry.left()
-        min_y = geometry.top()
-        max_x = max(min_x, geometry.right() - self.width())
-        max_y = max(min_y, geometry.bottom() - self.height())
-        vx = self.wander_velocity.x()
-        vy = self.wander_velocity.y()
-        if next_pos.x() <= min_x or next_pos.x() >= max_x:
-            vx = -vx
-        if next_pos.y() <= min_y or next_pos.y() >= max_y:
-            vy = -vy
-        if self.random.random() < 0.015:
-            vx += self.random.uniform(-0.6, 0.6)
-            vy += self.random.uniform(-0.4, 0.4)
-        vx = max(-2.4, min(2.4, vx or 1.0))
-        vy = max(-1.8, min(1.8, vy or 0.8))
-        self.wander_velocity = QPointF(vx, vy)
-        self.wander_pos = QPointF(
-            max(min_x, min(max_x, self.wander_pos.x() + vx)),
-            max(min_y, min(max_y, self.wander_pos.y() + vy)),
-        )
-        self.target_pos = QPoint(round(self.wander_pos.x()), round(self.wander_pos.y()))
-        if abs(vy) > abs(vx) * 0.6:
-            self._set_motion(Motion.UP)
-        elif vx < 0:
-            self._set_motion(Motion.LEFT)
-        else:
-            self._set_motion(Motion.RIGHT)
 
     def _resize_to_config(self) -> None:
         width = max(24, int(self.cell_width * self.config.scale))

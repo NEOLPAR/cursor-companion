@@ -31,6 +31,7 @@ from .pets import Pet, PetStore
 class ManagerWindow(QWidget):
     active_pet_changed = pyqtSignal(str)
     settings_changed = pyqtSignal()
+    close_requested = pyqtSignal()
 
     def __init__(self, config_store: ConfigStore, pet_store: PetStore) -> None:
         super().__init__()
@@ -124,15 +125,18 @@ class ManagerWindow(QWidget):
         self.autostart.setChecked(cfg.autostart)
         self.autostart.toggled.connect(self._save_settings)
 
-        self.wander_when_idle = QCheckBox()
-        self.wander_when_idle.setChecked(cfg.wander_when_idle)
-        self.wander_when_idle.toggled.connect(self._save_settings)
+        self.keep_open_in_tray = QCheckBox()
+        self.keep_open_in_tray.setChecked(cfg.keep_open_in_tray)
+        self.keep_open_in_tray.toggled.connect(self._save_settings)
 
         form.addRow("Scale", self.scale_slider)
         form.addRow("X offset", self.offset_x)
         form.addRow("Y offset", self.offset_y)
-        form.addRow("Start at login", self.autostart)
-        form.addRow("Wander when idle", self.wander_when_idle)
+        form.addRow("Start in tray at login", self.autostart)
+        form.addRow("Keep open in tray", self.keep_open_in_tray)
+        close_app = QPushButton("Close App")
+        close_app.clicked.connect(self.close_requested.emit)
+        form.addRow(close_app)
         return page
 
     def _save_settings(self) -> None:
@@ -141,10 +145,23 @@ class ManagerWindow(QWidget):
         cfg.offset_x = self.offset_x.value()
         cfg.offset_y = self.offset_y.value()
         cfg.autostart = self.autostart.isChecked()
-        cfg.wander_when_idle = self.wander_when_idle.isChecked()
-        set_autostart(cfg.autostart)
+        cfg.keep_open_in_tray = self.keep_open_in_tray.isChecked()
+        if cfg.autostart and not cfg.keep_open_in_tray:
+            cfg.keep_open_in_tray = True
+            self.keep_open_in_tray.blockSignals(True)
+            self.keep_open_in_tray.setChecked(True)
+            self.keep_open_in_tray.blockSignals(False)
+        set_autostart(cfg.autostart, background=True)
         self.config_store.save()
         self.settings_changed.emit()
+
+    def closeEvent(self, event) -> None:  # noqa: N802
+        if self.config_store.config.keep_open_in_tray:
+            event.ignore()
+            self.hide()
+            return
+        self.close_requested.emit()
+        event.accept()
 
     def _selected_pet_changed(self) -> None:
         pet = self._selected_pet()

@@ -13,8 +13,8 @@ class AppConfig:
     offset_x: int = 22
     offset_y: int = 18
     autostart: bool = False
+    keep_open_in_tray: bool = True
     visible: bool = True
-    wander_when_idle: bool = False
 
 
 class ConfigStore:

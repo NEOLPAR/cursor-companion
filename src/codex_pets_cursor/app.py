@@ -5,6 +5,9 @@ import sys
 import time
 from pathlib import Path
 
+if os.environ.get("XDG_SESSION_TYPE") == "wayland" and not os.environ.get("CODEX_PETS_CURSOR_NATIVE_WAYLAND"):
+    os.environ["QT_QPA_PLATFORM"] = "xcb"
+
 from PyQt6.QtCore import QPoint, QTimer
 from PyQt6.QtGui import QAction, QCursor, QIcon
 from PyQt6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
@@ -28,10 +31,17 @@ class CursorPetApp:
         self.manager = ManagerWindow(self.config_store, self.pet_store)
         self.manager.active_pet_changed.connect(self.set_active_pet)
         self.manager.settings_changed.connect(self.overlay.apply_config)
+        self.manager.settings_changed.connect(self._apply_tray_config)
+        self.manager.close_requested.connect(self._quit_app)
 
         self.bridge = CursorBridge(self.overlay.update_cursor)
-        self.bridge.register_dbus()
+        self.dbus_registered = self.bridge.register_dbus()
         self.bridge.install_kwin_script()
+        print(
+            f"Codex Pets Cursor 0.1.0-dev: tray menu includes 'Quit'; "
+            f"dbus_registered={self.dbus_registered}; qt_platform={os.environ.get('QT_QPA_PLATFORM', 'default')}",
+            flush=True,
+        )
 
         self.poll_timer = QTimer()
         self.poll_timer.setInterval(33)
@@ -42,7 +52,7 @@ class CursorPetApp:
         self.tray.setToolTip("Codex Pets Cursor")
         self.tray.setContextMenu(self._tray_menu())
         self.tray.activated.connect(self._tray_activated)
-        self.tray.show()
+        self._apply_tray_config()
 
         first_launch = not self.config_store.config.active_pet_id and not self.pet_store.list_pets()
         if first_launch:
@@ -52,10 +62,10 @@ class CursorPetApp:
             self._show_manager()
 
     def run(self) -> int:
-        try:
-            return self.qt.exec()
-        finally:
+        result = self.qt.exec()
+        if self.bridge:
             self.bridge.unload_kwin_script()
+        return result
 
     def set_active_pet(self, pet_id: str) -> None:
         self.overlay.set_pet(self.pet_store.get(pet_id))
@@ -68,13 +78,13 @@ class CursorPetApp:
         self.toggle_action = QAction("Hide Pet")
         self.toggle_action.triggered.connect(self._toggle_pet)
         self.pets_menu = QMenu("Active Pet")
-        quit_action = QAction("Quit")
-        quit_action.triggered.connect(self.qt.quit)
+        self.quit_action = QAction("Quit", self.menu)
+        self.quit_action.triggered.connect(self._quit_app)
         self.menu.addAction(self.show_manager_action)
         self.menu.addAction(self.toggle_action)
         self.menu.addMenu(self.pets_menu)
         self.menu.addSeparator()
-        self.menu.addAction(quit_action)
+        self.menu.addAction(self.quit_action)
         return self.menu
 
     def _refresh_tray_menu(self) -> None:
@@ -104,12 +114,17 @@ class CursorPetApp:
         self.overlay.apply_config()
         self._refresh_tray_menu()
 
+    def _quit_app(self) -> None:
+        self.overlay.hide()
+        self.tray.hide()
+        self.qt.quit()
+
     def _tray_activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
-        if reason == QSystemTrayIcon.ActivationReason.Trigger:
+        if self.config_store.config.keep_open_in_tray and reason == QSystemTrayIcon.ActivationReason.Trigger:
             self._show_manager()
 
     def _poll_cursor(self) -> None:
-        if os.environ.get("XDG_SESSION_TYPE") == "wayland" and time.monotonic() - self.bridge.last_update < 1.0:
+        if self.bridge and time.monotonic() - self.bridge.last_update < 1.0:
             return
         pos: QPoint = QCursor.pos()
         self.overlay.update_cursor(pos.x(), pos.y())
@@ -134,6 +149,14 @@ class CursorPetApp:
         self.manager.show()
         self.manager.raise_()
         self.manager.activateWindow()
+
+    def _apply_tray_config(self) -> None:
+        if self.config_store.config.keep_open_in_tray:
+            self.tray.show()
+            self.qt.setQuitOnLastWindowClosed(False)
+        else:
+            self.tray.hide()
+            self.qt.setQuitOnLastWindowClosed(True)
 
 
 def main() -> int:
