@@ -1,0 +1,20 @@
+pkgbase = codex-pets-cursor
+	pkgdesc = Animated Codex pet companion for the KDE Plasma cursor
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/NEOLPAR/codex-pets-cursor
+	arch = any
+	license = MIT
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-pyqt6
+	depends = python-pyqt6-webengine
+	depends = qt6-wayland
+	depends = qt6-imageformats
+	depends = xorg-xwayland
+	source = codex-pets-cursor-0.1.0.tar.gz::https://github.com/NEOLPAR/codex-pets-cursor/archive/refs/tags/v0.1.0.tar.gz
+	sha256sums = SKIP
+
+pkgname = codex-pets-cursor

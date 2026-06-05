@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-pets-cursor"
+version = "0.1.0"
+description = "Animated Codex pet companion for the KDE Plasma cursor"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "NEOLPAR" }]
+dependencies = [
+  "PyQt6>=6.6",
+]
+
+[project.gui-scripts]
+codex-pets-cursor = "codex_pets_cursor.app:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+codex_pets_cursor = ["assets/*"]
