@@ -6,3 +6,4 @@ Exec=cursor-companion
 Icon=input-mouse
 Terminal=false
 Categories=Utility;Qt;
+StartupNotify=false
