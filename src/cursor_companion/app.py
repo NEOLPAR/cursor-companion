@@ -11,6 +11,7 @@ from PyQt6.QtCore import QPoint, QTimer
 from PyQt6.QtGui import QAction, QCursor, QIcon
 from PyQt6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
+from . import __version__
 from .config import ConfigStore
 from .kwin_bridge import CursorBridge
 from .manager import ManagerWindow
@@ -40,7 +41,7 @@ class CursorPetApp:
         self.dbus_registered = self.bridge.register_dbus()
         self.bridge.install_kwin_script()
         print(
-            f"Cursor Companion 0.1.0-dev: tray menu includes 'Quit'; "
+            f"Cursor Companion {__version__}: tray menu includes 'Quit'; "
             f"dbus_registered={self.dbus_registered}; qt_platform={os.environ.get('QT_QPA_PLATFORM', 'default')}",
             flush=True,
         )

@@ -1,6 +1,6 @@
 # Maintainer: NEOLPAR
 pkgname=cursor-companion
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc='Animated pet companion for the KDE Plasma cursor'
 arch=('any')
