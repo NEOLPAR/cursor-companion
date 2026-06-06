@@ -17,6 +17,8 @@ def set_autostart(enabled: bool, background: bool = True) -> None:
                     "Type=Application",
                     "Name=Cursor Companion",
                     f"Exec={executable}{args}",
+                    "Icon=cursor-companion",
+                    "StartupNotify=false",
                     "X-KDE-autostart-after=panel",
                     "X-GNOME-Autostart-enabled=true",
                     "",

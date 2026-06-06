@@ -17,11 +17,14 @@ from .manager import ManagerWindow
 from .overlay import PetOverlay
 from .pets import PetStore
 
+APP_ICON = Path(__file__).with_name("assets") / "cursor-companion.svg"
+
 
 class CursorPetApp:
     def __init__(self, show_manager: bool = True) -> None:
         self.qt = QApplication(sys.argv)
         self.qt.setApplicationName("Cursor Companion")
+        self.qt.setWindowIcon(self._app_icon())
         self.qt.setQuitOnLastWindowClosed(False)
 
         self.config_store = ConfigStore()
@@ -47,7 +50,7 @@ class CursorPetApp:
         self.poll_timer.timeout.connect(self._poll_cursor)
         self.poll_timer.start()
 
-        self.tray = QSystemTrayIcon(QIcon.fromTheme("input-mouse"), self.qt)
+        self.tray = QSystemTrayIcon(self._app_icon(), self.qt)
         self.tray.setToolTip("Cursor Companion")
         self.tray.setContextMenu(self._tray_menu())
         self.tray.activated.connect(self._tray_activated)
@@ -66,6 +69,11 @@ class CursorPetApp:
         if self.bridge:
             self.bridge.unload_kwin_script()
         return result
+
+    def _app_icon(self) -> QIcon:
+        if APP_ICON.exists():
+            return QIcon(str(APP_ICON))
+        return QIcon.fromTheme("cursor-companion", QIcon.fromTheme("input-mouse"))
 
     def set_active_pet(self, pet_id: str) -> None:
         self.overlay.set_pet(self.pet_store.get(pet_id))

@@ -22,4 +22,6 @@ package() {
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 packaging/linux/io.github.NEOLPAR.CursorCompanion.desktop \
     "$pkgdir/usr/share/applications/io.github.NEOLPAR.CursorCompanion.desktop"
+  install -Dm644 src/cursor_companion/assets/cursor-companion.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/cursor-companion.svg"
 }
