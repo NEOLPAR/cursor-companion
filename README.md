@@ -9,7 +9,18 @@ Animated companion for KDE Plasma. It keeps your existing cursor theme and draws
 - Embeds Codex-Pets.net for browsing and saving downloads into a local collection.
 - Provides a tray menu, pet manager, scale and offset controls, and optional autostart.
 
+## Install
+
+```bash
+paru -S cursor-companion
+cursor-companion
+```
+
+The AUR package installs the Python, Qt, WebEngine, KDE D-Bus, and `xdg-open` dependencies needed by the app.
+
 ## Install From Source
+
+For local development:
 
 ```bash
 python -m build
@@ -17,13 +28,7 @@ pip install --user dist/*.whl
 cursor-companion
 ```
 
-On Arch-based systems, install the runtime dependencies first:
-
-```bash
-sudo pacman -S python-pyqt6 python-pyqt6-webengine qt6-tools xdg-utils
-```
-
-`qt6-tools` provides `qdbus6` for the KDE cursor bridge, and `xdg-utils` provides `xdg-open` for opening pet folders from the manager.
+On Arch-based systems, the runtime dependencies are `python-pyqt6`, `python-pyqt6-webengine`, `qt6-tools`, and `xdg-utils`.
 
 ## Local Data
 
