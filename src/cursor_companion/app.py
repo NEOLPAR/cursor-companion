@@ -27,6 +27,8 @@ class CursorPetApp:
         self.qt.setApplicationName("Cursor Companion")
         self.qt.setWindowIcon(self._app_icon())
         self.qt.setQuitOnLastWindowClosed(False)
+        if self.qt.isSessionRestored():
+            show_manager = False
 
         self.config_store = ConfigStore()
         self.pet_store = PetStore()
