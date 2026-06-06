@@ -6,3 +6,8 @@ dist/
 .pytest_cache/
 .mypy_cache/
 .idea
+packaging/aur/pkg/
+packaging/aur/src/
+packaging/aur/*.pkg.tar.zst
+packaging/aur/*.pkg.tar.zst.sig
+packaging/aur/*.tar.gz
