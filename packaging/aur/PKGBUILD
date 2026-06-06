@@ -7,7 +7,7 @@ arch=('any')
 url='https://github.com/NEOLPAR/cursor-companion'
 license=('MIT')
 depends=('python' 'python-pyqt6' 'python-pyqt6-webengine')
-makedepends=('python-build' 'python-installer' 'python-wheel')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
