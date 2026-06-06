@@ -29,6 +29,10 @@ class WanderSpec:
     dy: float
 
 
+WANDER_HORIZONTAL_SPEED = 5.0
+RETURN_TO_CURSOR_SPEED = 15.0
+
+
 class PetOverlay(QWidget):
     def __init__(self, config: AppConfig) -> None:
         super().__init__()
@@ -210,8 +214,8 @@ class PetOverlay(QWidget):
             return
         self.pending_wander_pause = False
         specs = [
-            WanderSpec(1, 3, 15, 5.0, 0),
-            WanderSpec(2, 3, 15, -5.0, 0),
+            WanderSpec(1, 3, 15, WANDER_HORIZONTAL_SPEED, 0),
+            WanderSpec(2, 3, 15, -WANDER_HORIZONTAL_SPEED, 0),
             WanderSpec(3, 2, 5, 0, 0),
             WanderSpec(4, 2, 5, 0, random.choice([-3.4, 3.4])),
             WanderSpec(5, 3, 8, 0, 0),
@@ -230,18 +234,18 @@ class PetOverlay(QWidget):
         self._set_row(self.wander_action.row)
 
     def _return_to_cursor(self) -> None:
-        current = QPointF(self.target_pos)
+        current = QPointF(self.companion_pos)
         target = QPointF(self.cursor_target_pos)
         dx = target.x() - current.x()
         dy = target.y() - current.y()
         distance = (dx * dx + dy * dy) ** 0.5
-        if distance <= 6:
+        if distance <= RETURN_TO_CURSOR_SPEED:
             self.returning_to_cursor = False
             self.companion_pos = QPointF(target)
             self.target_pos = QPoint(round(target.x()), round(target.y()))
             self._set_motion(Motion.IDLE)
             return
-        step = min(4.0, distance)
+        step = min(RETURN_TO_CURSOR_SPEED, distance)
         nx = current.x() + dx / distance * step
         ny = current.y() + dy / distance * step
         self.companion_pos = QPointF(nx, ny)
