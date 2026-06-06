@@ -20,7 +20,7 @@ cursor-companion
 On Arch-based systems, install the runtime dependencies first:
 
 ```bash
-sudo pacman -S python-pyqt6 python-pyqt6-webengine qt6-wayland qt6-imageformats xorg-xwayland
+sudo pacman -S python-pyqt6 python-pyqt6-webengine
 ```
 
 ## Local Data
