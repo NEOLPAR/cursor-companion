@@ -33,6 +33,12 @@ The app stores configuration in `~/.config/cursor-companion/` and downloaded pet
 
 The `packaging/aur` directory contains the package files used for Arch User Repository distribution.
 
+## Thanks
+
+Cursor Companion includes a small browser view for [Codex-Pets.net](https://codex-pets.net/), which makes it easy to find and download Codex-compatible pet packages.
+
+The site is powered by the open-source [codex-pet-share](https://github.com/portons/codex-pet-share) project. Thanks to that project and its maintainers for making a shared home for pixel pets.
+
 ## License
 
 MIT
