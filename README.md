@@ -20,8 +20,10 @@ cursor-companion
 On Arch-based systems, install the runtime dependencies first:
 
 ```bash
-sudo pacman -S python-pyqt6 python-pyqt6-webengine
+sudo pacman -S python-pyqt6 python-pyqt6-webengine qt6-tools xdg-utils
 ```
+
+`qt6-tools` provides `qdbus6` for the KDE cursor bridge, and `xdg-utils` provides `xdg-open` for opening pet folders from the manager.
 
 ## Local Data
 
