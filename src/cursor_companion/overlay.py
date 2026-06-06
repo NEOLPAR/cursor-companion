@@ -113,8 +113,6 @@ class PetOverlay(QWidget):
                 self.companion_pos = QPointF(self.cursor_target_pos)
                 self.target_pos = QPoint(self.cursor_target_pos)
                 self._set_motion(self._motion_for(pos))
-            if self.returning_to_cursor:
-                self._return_to_cursor()
         self.last_pos = pos
         self._resize_to_config()
         self.move(self.target_pos)
@@ -212,8 +210,8 @@ class PetOverlay(QWidget):
             return
         self.pending_wander_pause = False
         specs = [
-            WanderSpec(1, 3, 15, 4.0, 0),
-            WanderSpec(2, 3, 15, -4.0, 0),
+            WanderSpec(1, 3, 15, 5.0, 0),
+            WanderSpec(2, 3, 15, -5.0, 0),
             WanderSpec(3, 2, 5, 0, 0),
             WanderSpec(4, 2, 5, 0, random.choice([-3.4, 3.4])),
             WanderSpec(5, 3, 8, 0, 0),
