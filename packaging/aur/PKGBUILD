@@ -9,7 +9,7 @@ license=('MIT')
 depends=('python' 'python-pyqt6' 'python-pyqt6-webengine' 'qt6-tools' 'xdg-utils')
 makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('46de54a2fa5976d458ac2d7b6f2b6f8fb762abe561d92a46ab0a06cc9ac0c6bb')
 
 build() {
   cd "$pkgname-$pkgver"
